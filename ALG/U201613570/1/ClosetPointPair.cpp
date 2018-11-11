@@ -1,3 +1,4 @@
+#include <float.h>
 #include <algorithm>
 #include <cmath>
 #include <ctime>
@@ -111,9 +112,6 @@ double BruteForceMinDistance(Points p) {
       double dx = (p[i].x - p[j].x);
       double dy = (p[i].y - p[j].y);
       double d = dx * dx + dy * dy;
-      // printf("Distance({%f, %f}, {%f, %f}) = %f\n", p[i].x, p[i].y, p[j].x,
-      //        p[j].y, sqrt(d));
-
       min_d = Min(min_d, d);
     }
   }
