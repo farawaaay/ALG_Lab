@@ -121,8 +121,12 @@ double BruteForceMinDistance(Points p) {
 }
 
 int main() {
-  FILE* pFileIn = fopen("in.dat", "r");
-  FILE* pFileOut = fopen("out.dat", "wb");
+  FILE* pFileIn;
+  FILE* pFileOut;
+  if (pFileIn = fopen("in.dat", "r"))
+    pFileOut = fopen("out.dat", "wb");
+  else
+    return -1;
   int n;
   fscanf(pFileIn, "%d", &n);
   for (int i = 0; i < n; i++) {
