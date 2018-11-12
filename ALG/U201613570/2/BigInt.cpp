@@ -12,7 +12,7 @@ class Bigint {
   std::vector<int> number;
   bool positive;
   unsigned int skip;
-  static const int base = 1 << 16;
+  static const int base = 1000000000;
 
  public:
   Bigint();                                                       // Constructors
