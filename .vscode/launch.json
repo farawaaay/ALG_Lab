@@ -28,7 +28,7 @@
             "name": "(gdb) Launch BigInt",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/ALG/U201613570/2/BigInt.exe",
+            "program": "${workspaceFolder}/ALG/U201613570/2/BigIntMultiply.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/ALG/U201613570/2/",

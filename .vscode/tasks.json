@@ -6,7 +6,7 @@
         {
             "label": "build \"ClosetPointPair\"",
             "type": "shell",
-            "command": "g++",
+            "command": "C:\\Program Files\\mingw-w64\\mingw64\\bin\\g++.exe",
             "group": "build",
             "args": [
                 "-g",
@@ -19,20 +19,20 @@
         {
             "label": "build \"BigInt\"",
             "type": "shell",
-            "command": "g++",
+            "command": "C:\\Program Files\\mingw-w64\\mingw64\\bin\\g++.exe",
             "group": "build",
             "args": [
                 "-g",
-                "${workspaceFolder}/ALG/U201613570/2/BigInt.cpp",
+                "${workspaceFolder}/ALG/U201613570/2/BigIntMultiply.cpp",
                 "-o",
-                "${workspaceFolder}/ALG/U201613570/2/BigInt.exe"
+                "${workspaceFolder}/ALG/U201613570/2/BigIntMultiply.exe"
             ],
             "problemMatcher": []
         },
         {
             "label": "build \"BST\"",
             "type": "shell",
-            "command": "g++",
+            "command": "C:\\Program Files\\mingw-w64\\mingw64\\bin\\g++.exe",
             "group": "build",
             "args": [
                 "-g",
@@ -45,7 +45,7 @@
         {
             "label": "build \"FloydWarshall\"",
             "type": "shell",
-            "command": "g++",
+            "command": "C:\\Program Files\\mingw-w64\\mingw64\\bin\\g++.exe",
             "group": "build",
             "args": [
                 "-g",
