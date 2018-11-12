@@ -15,6 +15,45 @@
                 "${workspaceFolder}/ALG/U201613570/1/ClosetPointPair.exe"
             ],
             "problemMatcher": []
-        }
+        },
+        {
+            "label": "build \"BigInt\"",
+            "type": "shell",
+            "command": "g++",
+            "group": "build",
+            "args": [
+                "-g",
+                "${workspaceFolder}/ALG/U201613570/2/BigInt.cpp",
+                "-o",
+                "${workspaceFolder}/ALG/U201613570/2/BigInt.exe"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build \"BST\"",
+            "type": "shell",
+            "command": "g++",
+            "group": "build",
+            "args": [
+                "-g",
+                "${workspaceFolder}/ALG/U201613570/3/*.cpp",
+                "-o",
+                "${workspaceFolder}/ALG/U201613570/3/BST.exe"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build \"FloydWarshall\"",
+            "type": "shell",
+            "command": "g++",
+            "group": "build",
+            "args": [
+                "-g",
+                "${workspaceFolder}/ALG/U201613570/4/*.cpp",
+                "-o",
+                "${workspaceFolder}/ALG/U201613570/4/FloydWarshall.exe"
+            ],
+            "problemMatcher": []
+        },
     ]
 }
