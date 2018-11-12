@@ -24,6 +24,7 @@ class BigInt {
   BigInt operator-() const;
   BigInt operator-(BigInt const&) const;
   BigInt operator+(BigInt const&) const;
+  BigInt operator*(BigInt const&)const;
   bool operator>(BigInt const&) const;
   bool operator<(BigInt const&) const;
   bool operator==(BigInt const&) const;
@@ -155,10 +156,86 @@ BigInt BigInt::operator-(BigInt const& b) const {
   return c;
 };
 
+BigInt BigInt::operator*(BigInt const& b) const {
+  BigInt a = *this;
+  BigInt c({}, !(a.sign ^ b.sign));
+  if (a.digits.size() == 0 || b.digits.size() == 0) {
+    c.digits.push_back(0);
+    return c;
+  }
+  size_t a_l = a.digits.size();
+  size_t b_l = b.digits.size();
+  if (a_l <= 1 || b_l <= 1) {
+    long long carry = 0;
+    for (int i = 0; i < a_l; i++) {
+      for (int j = 0; j < b_l; j++) {
+        int b_d = j < a_l ? b.digits[i] : 0;
+        long long ret = (long long)a.digits[i] * (long long)b.digits[j];
+        c.digits.push_back((int)(ret % BASE + carry));
+        carry = ret / BASE;
+      }
+    }
+
+    if (carry) {
+      c.digits.push_back(carry);
+    }
+
+    return c;
+  }
+
+  // div and conq
+  size_t max_l = max(a_l, b_l);
+  size_t split_pos = max_l >> 1;
+  // split a, b
+  BigInt a_low({}, c.sign);
+  BigInt a_high({}, c.sign);
+  BigInt b_low({}, c.sign);
+  BigInt b_high({}, c.sign);
+
+  for (int i = 0; i < max_l; i++) {
+    if (i <= split_pos) {
+      if (i < a.digits.size())
+        a_low.digits.push_back(a.digits[i]);
+      if (i < b.digits.size())
+        b_low.digits.push_back(b.digits[i]);
+    } else {
+      if (i < a.digits.size())
+        a_high.digits.push_back(a.digits[i]);
+      if (i < b.digits.size())
+        b_high.digits.push_back(b.digits[i]);
+    }
+  }
+
+  BigInt z0 = a_low * b_low;
+  BigInt z1 = (a_low + a_high) * (b_low + b_high);
+  BigInt z2 = a_high * b_high;
+
+  BigInt z3({1}, c.sign);
+  BigInt z4({1}, c.sign);
+  for (int i = 0; i < 2 * split_pos; i++) {
+    if (i % 2 == 0) {
+      z4.digits.insert(z4.digits.begin(), 0);
+    }
+    z3.digits.insert(z3.digits.begin(), 0);
+  }
+
+  BigInt z5 = (z2 * z3);
+  BigInt z6 = (z1 - z2 - z0);
+  BigInt z7 = z6 * z4;
+  BigInt z8 = z5 + z7 + z0;
+
+  return z8;
+}
+
 std::ostream& operator<<(std::ostream& out, BigInt const& a) {
   if (!a.sign) {
     out << "-";
   }
+  if (a.digits.size() == 0) {
+    out << "0";
+    return out;
+  }
+
   for (int i = a.digits.size() - 1; i >= 0; i--) {
     string s = to_string(a.digits[i]);
     if (s.length() == BASE_LOG_10 || i == a.digits.size() - 1) {
@@ -185,15 +262,12 @@ int main() {
     infile >> x >> y >> flag;
     BigInt a(x);
     BigInt b(y);
-    if (flag == 1) {
-      BigInt c(a + b);
-      outfile << c << endl;
-    } else if (flag == 2) {
-      BigInt c(a - b);
-      outfile << c << endl;
-    }
-    // else if (flag == 3)
-    // outfile << a * b << endl;
+    if (flag == 1)
+      outfile << a + b << endl;
+    else if (flag == 2)
+      outfile << a - b << endl;
+    else if (flag == 3)
+      outfile << a * b << endl;
   }
   infile.close();
   outfile.close();
