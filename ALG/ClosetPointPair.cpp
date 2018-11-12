@@ -114,10 +114,10 @@ double MinDistance(Points points_x, Points points_y, PointPairs &record)
       {
         bool added = false;
         for (auto __p : record)
-        {
-          if (__p.first == p.first && __p.second == p.second)
+          if (__p.first == p.first && __p.second == p.second ||
+              __p.first == p.second && __p.second == p.first)
             added = true;
-        }
+
         if (!added)
           record.push_back(p);
       }
@@ -170,16 +170,14 @@ int main(size_t argc, char **argv)
   double min = MinDistance(points_x, points_y, rec);
   double __min = BruteForceMinDistance(points_x);
 
-  // printf("%d", min == __min);
-
-  printf("MinDistance: %f\n", min);
-  printf("MinDistance: %f\n", __min);
+  printf("DivAndConqMinDistance: %f\n", min);
   printf("Point Pairs:\n");
   for (auto pp : rec)
   {
     printf("(%f, %f) - (%f, %f) with d: %f\n", pp.first.x, pp.first.y,
            pp.second.x, pp.second.y, Distance(pp));
   }
+  printf("BruteForceMinDistance: %f\n", __min);
 
   return 0;
 }
