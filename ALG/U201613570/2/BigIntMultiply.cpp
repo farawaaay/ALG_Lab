@@ -113,15 +113,15 @@ BigInt BigInt::operator+(BigInt const& b) const {
     int a_d = i < a.digits.size() ? a.digits[i] : 0;
     int b_d = i < b.digits.size() ? b.digits[i] : 0;
     c.digits.push_back(a_d + b_d + carry);
-    if (c.digits[i] >= BASE) {  // Oops, too big.
-      carry = 1;                // Set the carry to be added into the next digit
-      c.digits[i] -= BASE;      // Adjust to be one digit
+    if (c.digits[i] >= BASE) {
+      carry = 1;
+      c.digits[i] -= BASE;
     } else {
-      carry = 0;  // It fit, so there's nothing to carry
+      carry = 0;
     }
   }
 
-  if (carry) {  // Don't forget to add the final carry if it's needed
+  if (carry) {
     c.digits.push_back(carry);
   }
 
@@ -139,16 +139,16 @@ BigInt BigInt::operator-(BigInt const& b) const {
   }
 
   BigInt c({}, a.sign);
-  int borrow = 0;  // We didn't borrow anything yet
+  int borrow = 0;
   for (int i = 0; i < max(a.digits.size(), b.digits.size()); i++) {
     int a_d = i < a.digits.size() ? a.digits[i] : 0;
     int b_d = i < b.digits.size() ? b.digits[i] : 0;
     c.digits.push_back(a_d - b_d - borrow);
-    if (c.digits[i] < 0) {  // Oops, we can't have a negative digit
-      borrow = 1;           // We'll borrow 10 from the next pair of digits
-      c.digits[i] += BASE;  // Add the borrowed 10
+    if (c.digits[i] < 0) {
+      borrow = 1;
+      c.digits[i] += BASE;
     } else {
-      borrow = 0;  // We don't need to borrow anything
+      borrow = 0;
     }
   }
 
