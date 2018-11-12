@@ -104,6 +104,15 @@ bool BigInt::operator<(BigInt const& b) const {
 
 BigInt BigInt::operator+(BigInt const& b) const {
   BigInt a = *this;
+
+  if (a.digits.size() == 0) {
+    return b;
+  }
+
+  if (b.digits.size() == 0) {
+    return a;
+  }
+
   if (a.sign != b.sign) {
     return a - (-b);
   }
@@ -126,11 +135,23 @@ BigInt BigInt::operator+(BigInt const& b) const {
     c.digits.push_back(carry);
   }
 
+  while (c.digits.size() > 0 && c.digits.back() == 0) {
+    c.digits.pop_back();
+  }
+
   return c;
 }
 
 BigInt BigInt::operator-(BigInt const& b) const {
   BigInt a = *this;
+  if (a.digits.size() == 0) {
+    return b;
+  }
+
+  if (b.digits.size() == 0) {
+    return a;
+  }
+
   if (a.sign != b.sign) {
     return a + (-b);
   }
@@ -153,18 +174,22 @@ BigInt BigInt::operator-(BigInt const& b) const {
     }
   }
 
+  while (c.digits.size() > 0 && c.digits.back() == 0)
+    c.digits.pop_back();
+
   return c;
 };
 
 BigInt BigInt::operator*(BigInt const& b) const {
   BigInt a = *this;
   BigInt c({}, !(a.sign ^ b.sign));
-  if (a.digits.size() == 0 || b.digits.size() == 0) {
-    c.digits.push_back(0);
-    return c;
-  }
   size_t a_l = a.digits.size();
   size_t b_l = b.digits.size();
+
+  if (a_l == 0 || b_l == 0) {
+    return c;
+  }
+
   if (a_l <= 1 || b_l <= 1) {
     long long carry = 0;
     for (int i = 0; i < a_l; i++) {
@@ -185,7 +210,7 @@ BigInt BigInt::operator*(BigInt const& b) const {
 
   // div and conq
   size_t max_l = max(a_l, b_l);
-  size_t split_pos = max_l >> 1;
+  size_t split_pos = max_l % 2 == 0 ? max_l >> 1 : (max_l + 1) >> 1;
   // split a, b
   BigInt a_low({}, c.sign);
   BigInt a_high({}, c.sign);
@@ -193,7 +218,7 @@ BigInt BigInt::operator*(BigInt const& b) const {
   BigInt b_high({}, c.sign);
 
   for (int i = 0; i < max_l; i++) {
-    if (i <= split_pos) {
+    if (i < split_pos) {
       if (i < a.digits.size())
         a_low.digits.push_back(a.digits[i]);
       if (i < b.digits.size())
@@ -205,24 +230,33 @@ BigInt BigInt::operator*(BigInt const& b) const {
         b_high.digits.push_back(b.digits[i]);
     }
   }
+  while (a_low.digits.size() > 0 && a_low.digits.back() == 0)
+    a_low.digits.pop_back();
+  while (b_low.digits.size() > 0 && b_low.digits.back() == 0)
+    b_low.digits.pop_back();
+  while (a_high.digits.size() > 0 && a_high.digits.back() == 0)
+    a_high.digits.pop_back();
+  while (b_high.digits.size() > 0 && b_high.digits.back() == 0)
+    b_high.digits.pop_back();
 
   BigInt z0 = a_low * b_low;
-  BigInt z1 = (a_low + a_high) * (b_low + b_high);
+  BigInt x1 = (a_low + a_high);
+  BigInt x2 = (b_low + b_high);
+  BigInt z1 = x1 * x2;
   BigInt z2 = a_high * b_high;
 
-  BigInt z3({1}, c.sign);
-  BigInt z4({1}, c.sign);
+  BigInt z6 = (z1 - z2 - z0);
+
   for (int i = 0; i < 2 * split_pos; i++) {
     if (i % 2 == 0) {
-      z4.digits.insert(z4.digits.begin(), 0);
+      z6.digits.insert(z6.digits.begin(), 0);
     }
-    z3.digits.insert(z3.digits.begin(), 0);
+    z2.digits.insert(z2.digits.begin(), 0);
   }
 
-  BigInt z5 = (z2 * z3);
-  BigInt z6 = (z1 - z2 - z0);
-  BigInt z7 = z6 * z4;
-  BigInt z8 = z5 + z7 + z0;
+  // BigInt z5 = z2 * z3;
+
+  BigInt z8 = z2 + z6 + z0;
 
   return z8;
 }
