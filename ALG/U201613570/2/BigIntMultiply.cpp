@@ -8,9 +8,10 @@
 #include <vector>
 using namespace std;
 
-#define BASE 100000000
-#define BASE_LOG_10 8
+#define BASE 10
+#define BASE_LOG_10 1
 #define IntList vector<int>
+constexpr int DIV_AND_CONQ_THROTTLE = numeric_limits<int>::max();
 
 class BigInt {
  private:
@@ -197,7 +198,8 @@ BigInt BigInt::operator*(BigInt const& b) const {
     return c;
   }
 
-  if (/* a_l <= 1 || b_l <= 1 */ true) {
+  // 在较小规模的情况下，直接用O(n^2)的算法
+  if (a_l <= DIV_AND_CONQ_THROTTLE || b_l <= DIV_AND_CONQ_THROTTLE) {
     if (a_l < b_l) {
       return b * a;
     }
