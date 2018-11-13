@@ -197,18 +197,20 @@ BigInt BigInt::operator*(BigInt const& b) const {
     return c;
   }
 
-  if (a_l <= 1 || b_l <= 1) {
+  if (/* a_l <= 1 || b_l <= 1 */ true) {
     if (a_l < b_l) {
       return b * a;
     }
     long long carry = 0;
     for (int i = 0; i < a_l; i++) {
-      long long ret = (long long)a.digits[i] * (long long)b.digits[0];
-      BigInt tmp({(int)(ret % BASE), int(ret / BASE)}, c.sign);
-      if (tmp.digits.back() == 0) {
-        tmp.digits.pop_back();
+      for (int j = 0; j < b_l; j++) {
+        long long ret = (long long)a.digits[i] * (long long)b.digits[j];
+        BigInt tmp({(int)(ret % BASE), int(ret / BASE)}, c.sign);
+        if (tmp.digits.back() == 0) {
+          tmp.digits.pop_back();
+        }
+        c = c + (tmp << (i + j));
       }
-      c = c + (tmp << i);
     }
 
     while (c.digits.size() > 0 && c.digits.back() == 0)
