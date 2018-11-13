@@ -203,7 +203,7 @@ int Bigint::SegmentLength(int segment) const {
 
 int main() {
   ifstream infile("in.dat");
-  ofstream outfile("out.dat");
+  ofstream outfile("out2.dat");
   int n;
   infile >> n;
   for (int i = 0; i < n; i++) {

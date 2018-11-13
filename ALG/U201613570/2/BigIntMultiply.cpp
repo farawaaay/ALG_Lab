@@ -25,6 +25,7 @@ class BigInt {
   BigInt operator-(BigInt const&) const;
   BigInt operator+(BigInt const&) const;
   BigInt operator*(BigInt const&)const;
+  BigInt operator<<(size_t s) const;
   bool operator>(BigInt const&) const;
   bool operator<(BigInt const&) const;
   bool operator==(BigInt const&) const;
@@ -34,13 +35,15 @@ class BigInt {
 
 BigInt::~BigInt() {}
 BigInt::BigInt(string s) {
+  digits = {};
   sign = s.substr(0, 1) != "-";  // true for positive
   if (!sign) {
     s = s.substr(1);
   }
   size_t l = s.length();
   size_t i = l % BASE_LOG_10;
-  digits = {stoi(s.substr(0, i))};
+  if (i != 0)
+    digits = {stoi(s.substr(0, i))};
   for (; i < l; i += BASE_LOG_10) {
     digits.insert(digits.begin(), stoi(s.substr(i, BASE_LOG_10)));
   }
@@ -104,6 +107,10 @@ bool BigInt::operator<(BigInt const& b) const {
 
 BigInt BigInt::operator+(BigInt const& b) const {
   BigInt a = *this;
+  BigInt _b(b.digits, b.sign);
+
+  while (_b.digits.size() > 0 && _b.digits.back() == 0)
+    _b.digits.pop_back();
 
   if (a.digits.size() == 0) {
     return b;
@@ -191,19 +198,21 @@ BigInt BigInt::operator*(BigInt const& b) const {
   }
 
   if (a_l <= 1 || b_l <= 1) {
+    if (a_l < b_l) {
+      return b * a;
+    }
     long long carry = 0;
     for (int i = 0; i < a_l; i++) {
-      for (int j = 0; j < b_l; j++) {
-        int b_d = j < a_l ? b.digits[i] : 0;
-        long long ret = (long long)a.digits[i] * (long long)b.digits[j];
-        c.digits.push_back((int)(ret % BASE + carry));
-        carry = ret / BASE;
+      long long ret = (long long)a.digits[i] * (long long)b.digits[0];
+      BigInt tmp({(int)(ret % BASE), int(ret / BASE)}, c.sign);
+      if (tmp.digits.back() == 0) {
+        tmp.digits.pop_back();
       }
+      c = c + (tmp << i);
     }
 
-    if (carry) {
-      c.digits.push_back(carry);
-    }
+    while (c.digits.size() > 0 && c.digits.back() == 0)
+      c.digits.pop_back();
 
     return c;
   }
@@ -240,25 +249,29 @@ BigInt BigInt::operator*(BigInt const& b) const {
     b_high.digits.pop_back();
 
   BigInt z0 = a_low * b_low;
-  BigInt x1 = (a_low + a_high);
-  BigInt x2 = (b_low + b_high);
-  BigInt z1 = x1 * x2;
+  BigInt z1 = (a_low + a_high) * (b_low + b_high);
   BigInt z2 = a_high * b_high;
-
-  BigInt z6 = (z1 - z2 - z0);
+  BigInt z3 = z1 - z2 - z0;
 
   for (int i = 0; i < 2 * split_pos; i++) {
     if (i % 2 == 0) {
-      z6.digits.insert(z6.digits.begin(), 0);
+      z3.digits.insert(z3.digits.begin(), 0);
     }
     z2.digits.insert(z2.digits.begin(), 0);
   }
 
-  // BigInt z5 = z2 * z3;
-
-  BigInt z8 = z2 + z6 + z0;
-
+  BigInt z8 = z2 + z3 + z0;
+  z8.sign = c.sign;
   return z8;
+}
+
+BigInt BigInt::operator<<(size_t s) const {
+  BigInt a = *this;
+  for (int i = 0; i < s; i++) {
+    a.digits.insert(a.digits.begin(), 0);
+  }
+
+  return a;
 }
 
 std::ostream& operator<<(std::ostream& out, BigInt const& a) {
@@ -275,8 +288,10 @@ std::ostream& operator<<(std::ostream& out, BigInt const& a) {
     if (s.length() == BASE_LOG_10 || i == a.digits.size() - 1) {
       out << s;
     } else {
-      for (int i = 0; i < BASE_LOG_10 - s.length(); i++) {
-        out << "0";
+      if (BASE_LOG_10 > 1) {
+        for (int i = 0; i < BASE_LOG_10 - s.length(); i++) {
+          out << "0";
+        }
       }
       out << s;
     }
